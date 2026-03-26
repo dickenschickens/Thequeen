@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Melby Registry</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C97A;
+    --gold-dark: #8B6914;
+    --crimson: #8B1A1A;
+    --crimson-light: #B52B2B;
+    --ink: #1A1208;
+    --parchment: #F5EDD6;
+    --parchment-dark: #E8D9B0;
+    --parchment-deeper: #D4C08A;
+    --ivory: #FDFAF0;
+    --shadow: rgba(26,18,8,0.4);
+    --emerald: #1B5E3B;
+    --emerald-light: #2D8A5E;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'EB Garamond', serif;
+    background: var(--ink);
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(201,168,76,0.03) 40px, rgba(201,168,76,0.03) 80px),
+      repeating-linear-gradient(-45deg, transparent, transparent 40px, rgba(201,168,76,0.03) 40px, rgba(201,168,76,0.03) 80px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  header { text-align: center; padding: 40px 20px 30px; }
+
+  .crown-icon {
+    font-size: 48px;
+    line-height: 1;
+    margin-bottom: 8px;
+    animation: glow 3s ease-in-out infinite;
+  }
+
+  @keyframes glow {
+    0%, 100% { filter: drop-shadow(0 0 15px var(--gold)); }
+    50%       { filter: drop-shadow(0 0 30px var(--gold-light)); }
+  }
+
+  header h1 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(22px, 5vw, 42px);
+    color: var(--gold-light);
+    letter-spacing: 4px;
+    text-shadow: 0 0 30px rgba(201,168,76,0.5), 2px 2px 0 var(--gold-dark);
+    line-height: 1.2;
+  }
+
+  .subtitle {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    color: var(--parchment-deeper);
+    letter-spacing: 6px;
+    margin-top: 8px;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+
+  .divider { display: flex; align-items: center; gap: 16px; margin: 20px 0; color: var(--gold); }
+  .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: linear-gradient(to right, transparent, var(--gold), transparent); }
+  .divider span { font-size: 20px; }
+
+  /* NAV */
+  nav {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 30px;
+    background: rgba(201,168,76,0.08);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 4px;
+    padding: 4px;
+    flex-wrap: wrap;
+  }
+
+  .nav-btn {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    padding: 10px 20px;
+    background: transparent;
+    border: none;
+    color: var(--parchment-deeper);
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.3s;
+    text-transform: uppercase;
+  }
+
+  .nav-btn.active {
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    color: var(--ink);
+    font-weight: 700;
+    box-shadow: 0 2px 12px rgba(201,168,76,0.4);
+  }
+
+  .nav-btn:hover:not(.active) { background: rgba(201,168,76,0.15); color: var(--gold-light); }
+  .nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* PANELS */
+  .panel { display: none; }
+  .panel.active { display: block; animation: fadeIn 0.4s ease; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* CARD */
+  .card {
+    background: linear-gradient(145deg, var(--ivory), var(--parchment), var(--parchment-dark));
+    border: 2px solid var(--gold-dark);
+    border-radius: 4px;
+    padding: 30px;
+    position: relative;
+    box-shadow: 0 4px 30px var(--shadow), inset 0 1px 0 rgba(255,255,255,0.5), inset 0 -1px 0 rgba(139,105,20,0.3);
+    margin-bottom: 20px;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 2px;
+    pointer-events: none;
+  }
+
+  .card-title {
+    font-family: 'Cinzel', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--crimson);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* FORM */
+  label {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+
+  select, input[type="text"], input[type="password"], input[type="number"], textarea {
+    width: 100%;
+    padding: 10px 14px;
+    background: rgba(245,237,214,0.6);
+    border: 1px solid var(--gold-dark);
+    border-radius: 3px;
+    font-family: 'EB Garamond', serif;
+    font-size: 16px;
+    color: var(--ink);
+    margin-bottom: 18px;
+    transition: all 0.2s;
+    outline: none;
+  }
+
+  select:focus, input:focus, textarea:focus {
+    border-color: var(--gold);
+    background: rgba(245,237,214,0.9);
+    box-shadow: 0 0 0 3px rgba(201,168,76,0.2);
+  }
+
+  textarea { resize: vertical; min-height: 80px; }
+
+  /* PRESETS */
+  .presets { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; margin-bottom: 18px; }
+
+  .preset-btn {
+    font-family: 'EB Garamond', serif;
+    font-size: 14px;
+    padding: 8px 12px;
+    background: transparent;
+    border: 1px solid var(--gold-dark);
+    border-radius: 3px;
+    cursor: pointer;
+    color: var(--ink);
+    text-align: left;
+    transition: all 0.2s;
+  }
+
+  .preset-btn:hover { background: rgba(201,168,76,0.15); border-color: var(--gold); }
+  .preset-btn.selected-award  { background: rgba(27,94,59,0.15);  border-color: var(--emerald); color: var(--emerald); }
+  .preset-btn.selected-deduct { background: rgba(139,26,26,0.12); border-color: var(--crimson); color: var(--crimson); }
+
+  .preset-label { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; opacity: 0.6; display: block; }
+
+  .amount-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  /* BUTTONS */
+  .btn-award, .btn-deduct {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 3px;
+    padding: 14px 30px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: 700;
+    transition: all 0.2s;
+    width: 100%;
+  }
+
+  .btn-award  { background: linear-gradient(135deg, var(--emerald), var(--emerald-light)); color: var(--ivory); box-shadow: 0 4px 15px rgba(27,94,59,0.4); }
+  .btn-award:hover:not(:disabled)  { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(27,94,59,0.5); }
+  .btn-deduct { background: linear-gradient(135deg, var(--crimson), var(--crimson-light)); color: var(--ivory); box-shadow: 0 4px 15px rgba(139,26,26,0.4); }
+  .btn-deduct:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(139,26,26,0.5); }
+  .btn-award:disabled, .btn-deduct:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
+
+  .btn-secondary {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    padding: 10px 20px;
+    background: transparent;
+    border: 1px solid var(--gold-dark);
+    border-radius: 3px;
+    cursor: pointer;
+    color: var(--gold-dark);
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover { background: rgba(201,168,76,0.1); border-color: var(--gold); color: var(--gold); }
+
+  .btn-gold {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    color: var(--ink);
+    text-transform: uppercase;
+    font-weight: 700;
+    transition: all 0.2s;
+  }
+  .btn-gold:hover { opacity: 0.9; transform: translateY(-1px); }
+
+  /* LOADING OVERLAY */
+  #loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--ink);
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    transition: opacity 0.5s;
+  }
+
+  #loading-overlay.hidden { opacity: 0; pointer-events: none; }
+
+  .loading-crown {
+    font-size: 56px;
+    animation: glow 1.5s ease-in-out infinite;
+  }
+
+  .loading-text {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    text-transform: uppercase;
+    opacity: 0.8;
+  }
+
+  .loading-dots::after {
+    content: '';
+    animation: dots 1.5s steps(4, end) infinite;
+  }
+
+  @keyframes dots {
+    0%   { content: ''; }
+    25%  { content: '.'; }
+    50%  { content: '..'; }
+    75%  { content: '...'; }
+    100% { content: ''; }
+  }
+
+  /* SAVING INDICATOR */
+  #save-indicator {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    background: rgba(26,18,8,0.9);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 3px;
+    padding: 8px 14px;
+    z-index: 900;
+    opacity: 0;
+    transition: opacity 0.3s;
+    text-transform: uppercase;
+  }
+  #save-indicator.visible { opacity: 1; }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    top: 24px; right: 24px;
+    padding: 14px 24px;
+    border-radius: 4px;
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    z-index: 1000;
+    transform: translateX(120%);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    max-width: 300px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  }
+  .toast.show   { transform: translateX(0); }
+  .toast.award  { background: var(--emerald); color: var(--ivory); border: 1px solid var(--emerald-light); }
+  .toast.deduct { background: var(--crimson); color: var(--ivory); border: 1px solid var(--crimson-light); }
+  .toast.info   { background: var(--gold-dark); color: var(--ivory); border: 1px solid var(--gold); }
+
+  /* LEADERBOARD */
+  .leaderboard { list-style: none; }
+
+  .leaderboard-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, var(--ivory), var(--parchment));
+    border: 1px solid var(--gold-dark);
+    border-radius: 3px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .leaderboard-item::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
+  .leaderboard-item.rank-1::before    { background: linear-gradient(to bottom, #FFD700, #C9A84C); }
+  .leaderboard-item.rank-2::before    { background: linear-gradient(to bottom, #C0C0C0, #A0A0A0); }
+  .leaderboard-item.rank-3::before    { background: linear-gradient(to bottom, #CD7F32, #A05A20); }
+  .leaderboard-item.rank-other::before { background: var(--parchment-deeper); }
+
+  .rank-badge { font-family: 'Cinzel Decorative', serif; font-size: 18px; font-weight: 900; min-width: 36px; text-align: center; }
+  .rank-1 .rank-badge     { color: #C9A84C; }
+  .rank-2 .rank-badge     { color: #A0A0A0; }
+  .rank-3 .rank-badge     { color: #CD7F32; }
+  .rank-other .rank-badge { color: var(--parchment-deeper); font-size: 14px; }
+
+  .lb-name  { font-family: 'Cinzel', serif; font-size: 15px; font-weight: 600; flex: 1; }
+
+  .melby-score { font-family: 'Cinzel Decorative', serif; font-size: 20px; font-weight: 700; color: var(--gold-dark); }
+  .melby-score .unit { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 2px; opacity: 0.7; display: block; text-align: right; }
+
+  .score-positive { color: var(--emerald) !important; }
+  .score-negative { color: var(--crimson) !important; }
+
+  /* STAFF GRID */
+  .staff-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+
+  .staff-card {
+    background: linear-gradient(145deg, var(--ivory), var(--parchment));
+    border: 1px solid var(--gold-dark);
+    border-radius: 4px;
+    padding: 24px;
+    text-align: center;
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+  .staff-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px var(--shadow); border-color: var(--gold); }
+
+  .staff-avatar {
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    margin: 0 auto 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 22px;
+    color: var(--ink);
+    border: 2px solid var(--gold-light);
+    box-shadow: 0 4px 12px rgba(201,168,76,0.3);
+  }
+
+  .staff-card-name  { font-family: 'Cinzel', serif; font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+  .staff-card-score { font-family: 'Cinzel Decorative', serif; font-size: 28px; font-weight: 900; line-height: 1; }
+  .staff-card-label { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold-dark); opacity: 0.7; margin-top: 4px; }
+
+  /* HISTORY */
+  .history-item { display: flex; align-items: flex-start; gap: 14px; padding: 12px 0; border-bottom: 1px solid rgba(201,168,76,0.2); font-size: 15px; }
+  .history-icon   { font-size: 18px; min-width: 24px; text-align: center; margin-top: 2px; }
+  .history-name   { font-family: 'Cinzel', serif; font-size: 12px; font-weight: 700; }
+  .history-reason { opacity: 0.8; font-style: italic; }
+  .history-time   { font-size: 12px; opacity: 0.5; font-family: 'Cinzel', serif; letter-spacing: 1px; }
+  .history-amount { margin-left: auto; font-family: 'Cinzel Decorative', serif; font-size: 14px; font-weight: 700; white-space: nowrap; }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(26,18,8,0.85);
+    z-index: 500;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.2s;
+  }
+
+  .modal {
+    background: linear-gradient(145deg, var(--ivory), var(--parchment));
+    border: 2px solid var(--gold);
+    border-radius: 6px;
+    padding: 32px;
+    max-width: 440px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    position: relative;
+  }
+
+  .modal-title { font-family: 'Cinzel', serif; font-size: 16px; font-weight: 700; color: var(--crimson); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 20px; }
+  .modal-close { position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 20px; cursor: pointer; color: var(--gold-dark); padding: 4px; line-height: 1; }
+
+  .staff-history-list { max-height: 300px; overflow-y: auto; }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--parchment-dark); }
+  ::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 3px; }
+
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .total-stat { font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 2px; color: var(--gold-dark); opacity: 0.8; }
+
+  .preset-type-toggle { display: flex; gap: 8px; margin-bottom: 12px; }
+
+  .toggle-btn {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 2px;
+    padding: 6px 14px;
+    border-radius: 3px;
+    border: 1px solid;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s;
+    background: transparent;
+  }
+  .toggle-award  { border-color: var(--emerald); color: var(--emerald); }
+  .toggle-award.active  { background: var(--emerald); color: white; }
+  .toggle-deduct { border-color: var(--crimson); color: var(--crimson); }
+  .toggle-deduct.active { background: var(--crimson); color: white; }
+
+  .empty-state { text-align: center; padding: 40px; color: var(--parchment-deeper); font-style: italic; opacity: 0.7; }
+
+  /* LOCK SCREEN */
+  .lock-screen { text-align: center; padding: 50px 30px; }
+  .lock-icon   { font-size: 52px; margin-bottom: 16px; }
+  .lock-title  { font-family: 'Cinzel', serif; font-size: 15px; letter-spacing: 4px; color: var(--gold-dark); text-transform: uppercase; margin-bottom: 6px; }
+  .lock-sub    { font-style: italic; color: var(--ink); opacity: 0.6; margin-bottom: 28px; font-size: 16px; }
+
+  .lock-row  { display: flex; gap: 10px; max-width: 340px; margin: 0 auto; }
+  .lock-row input { flex: 1; margin-bottom: 0; text-align: center; letter-spacing: 3px; font-size: 18px; }
+
+  .lock-error { font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 2px; color: var(--crimson-light); margin-top: 12px; height: 18px; text-transform: uppercase; }
+
+  .btn-lock-out {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 2px;
+    padding: 6px 14px;
+    background: transparent;
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 3px;
+    cursor: pointer;
+    color: var(--gold-dark);
+    text-transform: uppercase;
+    transition: all 0.2s;
+    margin-left: 8px;
+  }
+  .btn-lock-out:hover { border-color: var(--gold); color: var(--gold); }
+
+  @media (max-width: 600px) {
+    .amount-row, .btn-row { grid-template-columns: 1fr; }
+    .presets { grid-template-columns: 1fr 1fr; }
+    .nav-btn { padding: 8px 12px; font-size: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOADING OVERLAY -->
+<div id="loading-overlay">
+  <div class="loading-crown">&#9819;</div>
+  <div class="loading-text loading-dots">Summoning the Registry</div>
+</div>
+
+<div id="save-indicator">&#9998; Saving...</div>
+
+<div class="app">
+  <header>
+    <div class="crown-icon">&#9819;</div>
+    <h1>The Melby Registry</h1>
+    <p class="subtitle">Royal Decree of Queen Britta</p>
+  </header>
+
+  <div class="divider"><span>&#10022;</span></div>
+
+  <nav id="main-nav">
+    <button class="nav-btn active" data-panel="dashboard">&#9998; Dashboard</button>
+    <button class="nav-btn" data-panel="award">&#10022; Award Melbys</button>
+    <button class="nav-btn" data-panel="staff">Staff Scores</button>
+    <button class="nav-btn" data-panel="history">&#128220; Ledger</button>
+  </nav>
+
+  <!-- DASHBOARD -->
+  <div id="panel-dashboard" class="panel active">
+    <div class="card">
+      <div class="section-header">
+        <div class="card-title">Royal Rankings</div>
+        <div class="total-stat" id="total-melbys-stat"></div>
+      </div>
+      <ul class="leaderboard" id="leaderboard"></ul>
+      <div id="dashboard-empty" class="empty-state" style="display:none;">No staff enrolled yet. Add staff members to begin.</div>
+    </div>
+    <div style="text-align:center;margin-top:12px;">
+      <button class="btn-secondary" onclick="openAddStaff()">+ Enroll New Staff Member</button>
+    </div>
+  </div>
+
+  <!-- AWARD PANEL -->
+  <div id="panel-award" class="panel">
+    <div id="award-lock" class="card">
+      <div class="lock-screen">
+        <div class="lock-icon">&#128274;</div>
+        <div class="lock-title">Royal Clearance Required</div>
+        <div class="lock-sub">This chamber is reserved for Queen Britta alone.</div>
+        <div class="lock-row">
+          <input type="password" id="lock-password" placeholder="Enter password...">
+          <button class="btn-gold" onclick="tryUnlock()">Enter</button>
+        </div>
+        <div class="lock-error" id="lock-error"></div>
+      </div>
+    </div>
+    <div id="award-content" style="display:none;">
+      <div style="display:flex;justify-content:flex-end;align-items:center;margin-bottom:10px;">
+        <span style="font-family:'Cinzel',serif;font-size:11px;color:var(--gold-dark);letter-spacing:2px;">Queen Britta</span>
+        <button class="btn-lock-out" onclick="lockAward()">&#128274; Lock</button>
+      </div>
+      <div class="card">
+        <div class="card-title">Issue Melbys</div>
+
+        <label>Staff Member</label>
+        <select id="award-staff">
+          <option value="">&#8212; Select a member of staff &#8212;</option>
+        </select>
+
+        <label>Reason</label>
+        <div class="preset-type-toggle">
+          <button class="toggle-btn toggle-award active" id="toggle-award-btn" onclick="setPresetType('award')">Merits</button>
+          <button class="toggle-btn toggle-deduct" id="toggle-deduct-btn" onclick="setPresetType('deduct')">Demerits</button>
+        </div>
+        <div class="presets" id="presets-container"></div>
+
+        <label>Custom Reason (optional)</label>
+        <textarea id="custom-reason" placeholder="Describe the deed in detail..."></textarea>
+
+        <div class="amount-row">
+          <div>
+            <label>Melbys to Award</label>
+            <input type="number" id="award-amount" value="5" min="1" max="1000">
+          </div>
+          <div>
+            <label>Melbys to Deduct</label>
+            <input type="number" id="deduct-amount" value="5" min="1" max="1000">
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-award" id="btn-do-award" onclick="processAction('award')">Award Melbys</button>
+          <button class="btn-deduct" id="btn-do-deduct" onclick="processAction('deduct')">Deduct Melbys</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STAFF SCORES -->
+  <div id="panel-staff" class="panel">
+    <div class="card">
+      <div class="section-header">
+        <div class="card-title">Staff Scoreboard</div>
+        <button class="btn-secondary" onclick="openAddStaff()">+ Add Member</button>
+      </div>
+      <div class="staff-grid" id="staff-grid"></div>
+      <div id="staff-empty" class="empty-state" style="display:none;">No staff enrolled yet.</div>
+    </div>
+  </div>
+
+  <!-- LEDGER -->
+  <div id="panel-history" class="panel">
+    <div class="card">
+      <div class="card-title">The Royal Ledger</div>
+      <div id="history-list"></div>
+      <div id="history-empty" class="empty-state" style="display:none;">The ledger is empty. No Melbys have been issued yet.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD STAFF MODAL -->
+<div class="modal-overlay" id="add-staff-modal" style="display:none;">
+  <div class="modal">
+    <button class="modal-close" onclick="closeAddStaff()">&#10005;</button>
+    <div class="modal-title">Enroll Staff Member</div>
+    <label>Full Name</label>
+    <input type="text" id="new-staff-name" placeholder="Enter name...">
+    <div style="display:flex;gap:10px;margin-top:8px;">
+      <button class="btn-secondary" onclick="closeAddStaff()">Cancel</button>
+      <button class="btn-gold" onclick="addStaff()" style="flex:1;">Enroll Member</button>
+    </div>
+  </div>
+</div>
+
+<!-- STAFF DETAIL MODAL -->
+<div class="modal-overlay" id="staff-detail-modal" style="display:none;">
+  <div class="modal" style="max-width:520px;">
+    <button class="modal-close" onclick="closeStaffDetail()">&#10005;</button>
+    <div class="modal-title" id="detail-name"></div>
+    <div style="text-align:center;margin-bottom:20px;">
+      <div id="detail-score" style="font-family:'Cinzel Decorative',serif;font-size:42px;font-weight:900;"></div>
+      <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:3px;color:var(--gold-dark);opacity:0.7;">MELBYS</div>
+    </div>
+    <div class="card-title" style="font-size:13px;margin-bottom:12px;">Recent Activity</div>
+    <div class="staff-history-list" id="staff-history-list"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  // ── CONSTANTS ─────────────────────────────────────────
+  var PASSWORD     = 'Peasants';
+  var STORAGE_KEY  = 'melby-registry-data';   // single shared key
+
+  // ── STATE ─────────────────────────────────────────────
+  var staff             = [];
+  var txHistory         = [];
+  var currentPresetType = 'award';
+  var selectedPreset    = null;
+  var isUnlocked        = false;
+  var toastTimer        = null;
+  var isSaving          = false;
+  var saveIndicatorTimer = null;
+
+  var PRESETS = {
+    award: [
+      { label: 'Exceptional Work',  text: 'Exceptional work and above-and-beyond effort' },
+      { label: 'Punctuality',       text: 'Exemplary punctuality and time management' },
+      { label: 'Team Spirit',       text: 'Outstanding contribution to team morale' },
+      { label: 'Problem Solved',    text: 'Solved a complex problem with great skill' },
+      { label: 'Client Praise',     text: 'Received glowing praise from a client' },
+      { label: 'Initiative',        text: 'Showed remarkable initiative without being asked' },
+      { label: 'Creative Idea',     text: 'Proposed a brilliant and innovative idea' },
+      { label: 'Royal Conduct',     text: 'Conducted themselves with the utmost dignity' }
+    ],
+    deduct: [
+      { label: 'Late Arrival',      text: 'Arrived late without a satisfactory excuse' },
+      { label: 'Missed Deadline',   text: 'Failed to meet an agreed deadline' },
+      { label: 'Shoddy Work',       text: 'Submitted work of an unacceptable standard' },
+      { label: 'Poor Attitude',     text: 'Displayed a poor attitude toward colleagues' },
+      { label: 'Disorganisation',   text: 'Demonstrated a concerning lack of organisation' },
+      { label: 'Email Ignored',     text: 'Failed to respond to correspondence in a timely manner' },
+      { label: 'Disturbance',       text: 'Caused an unnecessary disturbance in the workplace' },
+      { label: 'Royal Infraction',  text: 'Committed a minor infraction against royal protocol' }
+    ]
+  };
+
+  // ── HELPERS ───────────────────────────────────────────
+  function get(id) { return document.getElementById(id); }
+
+  function esc(str) {
+    return String(str)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function formatTime(iso) {
+    return new Date(iso).toLocaleDateString('en-GB', {
+      day: 'numeric', month: 'short', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
+  }
+
+  function showToast(msg, type) {
+    var t = get('toast');
+    t.textContent = msg;
+    t.className = 'toast ' + (type || 'info') + ' show';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove('show'); }, 3200);
+  }
+
+  function showSaveIndicator() {
+    var el = get('save-indicator');
+    el.classList.add('visible');
+    clearTimeout(saveIndicatorTimer);
+    saveIndicatorTimer = setTimeout(function () { el.classList.remove('visible'); }, 2000);
+  }
+
+  function setActionBtns(disabled) {
+    get('btn-do-award').disabled  = disabled;
+    get('btn-do-deduct').disabled = disabled;
+  }
+
+  // ── SHARED STORAGE ────────────────────────────────────
+  // Uses window.storage (shared: true) so all users see the same data.
+  // Falls back to localStorage if storage API is unavailable.
+
+  function hasStorageAPI() {
+    return typeof window.storage !== 'undefined' && typeof window.storage.get === 'function';
+  }
+
+  function loadData() {
+    if (hasStorageAPI()) {
+      return window.storage.get(STORAGE_KEY, true)
+        .then(function (result) {
+          if (result && result.value) {
+            var parsed = JSON.parse(result.value);
+            staff     = parsed.staff     || [];
+            txHistory = parsed.txHistory || [];
+          }
+        })
+        .catch(function () {
+          // Key doesn't exist yet — start empty
+          staff     = [];
+          txHistory = [];
+        });
+    } else {
+      // Fallback: localStorage (single-browser only)
+      try {
+        var raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          var parsed = JSON.parse(raw);
+          staff     = parsed.staff     || [];
+          txHistory = parsed.txHistory || [];
+        }
+      } catch (e) {}
+      return Promise.resolve();
+    }
+  }
+
+  function saveData() {
+    isSaving = true;
+    showSaveIndicator();
+    var payload = JSON.stringify({ staff: staff, txHistory: txHistory });
+
+    if (hasStorageAPI()) {
+      return window.storage.set(STORAGE_KEY, payload, true)
+        .then(function () { isSaving = false; })
+        .catch(function () {
+          isSaving = false;
+          showToast('Save failed. Please try again.', 'deduct');
+        });
+    } else {
+      try { localStorage.setItem(STORAGE_KEY, payload); } catch (e) {}
+      isSaving = false;
+      return Promise.resolve();
+    }
+  }
+
+  // ── NAV ───────────────────────────────────────────────
+  function switchPanel(name) {
+    document.querySelectorAll('.panel').forEach(function (p) { p.classList.remove('active'); });
+    document.querySelectorAll('.nav-btn').forEach(function (b) { b.classList.remove('active'); });
+    get('panel-' + name).classList.add('active');
+    var btn = document.querySelector('.nav-btn[data-panel="' + name + '"]');
+    if (btn) btn.classList.add('active');
+
+    if (name === 'dashboard') renderDashboard();
+    if (name === 'staff')     renderStaffPanel();
+    if (name === 'history')   renderHistory();
+    if (name === 'award')     enterAwardPanel();
+  }
+
+  document.querySelectorAll('.nav-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      switchPanel(btn.getAttribute('data-panel'));
+    });
+  });
+
+  // ── LOCK ──────────────────────────────────────────────
+  function enterAwardPanel() {
+    if (isUnlocked) {
+      get('award-lock').style.display    = 'none';
+      get('award-content').style.display = 'block';
+      renderAwardPanel();
+    } else {
+      get('award-lock').style.display    = 'block';
+      get('award-content').style.display = 'none';
+      get('lock-error').textContent = '';
+      get('lock-password').value    = '';
+      setTimeout(function () { get('lock-password').focus(); }, 100);
+    }
+  }
+
+  get('lock-password').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') tryUnlock();
+  });
+
+  window.tryUnlock = function () {
+    var input = get('lock-password');
+    if (input.value === PASSWORD) {
+      isUnlocked = true;
+      input.value = '';
+      get('lock-error').textContent      = '';
+      get('award-lock').style.display    = 'none';
+      get('award-content').style.display = 'block';
+      renderAwardPanel();
+    } else {
+      get('lock-error').textContent = 'Access denied. Try again.';
+      input.value = '';
+      input.focus();
+    }
+  };
+
+  window.lockAward = function () {
+    isUnlocked = false;
+    get('award-lock').style.display    = 'block';
+    get('award-content').style.display = 'none';
+    get('lock-password').value    = '';
+    get('lock-error').textContent = '';
+  };
+
+  // ── DASHBOARD ─────────────────────────────────────────
+  function renderDashboard() {
+    var el     = get('leaderboard');
+    var empty  = get('dashboard-empty');
+    var sorted = staff.slice().sort(function (a, b) { return b.score - a.score; });
+    var total  = staff.reduce(function (s, m) { return s + Math.max(0, m.score); }, 0);
+    get('total-melbys-stat').textContent = total + ' total melbys issued';
+
+    if (!sorted.length) {
+      el.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+
+    el.innerHTML = sorted.map(function (s, i) {
+      var rc  = i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : 'rank-other';
+      var rl  = i === 0 ? '&#9819;' : i === 1 ? '&#9820;' : i === 2 ? '&#9822;' : (i + 1);
+      var sc  = s.score > 0 ? 'score-positive' : s.score < 0 ? 'score-negative' : '';
+      var pfx = s.score > 0 ? '+' : '';
+      return '<li class="leaderboard-item ' + rc + '">' +
+        '<span class="rank-badge">' + rl + '</span>' +
+        '<span class="lb-name">' + esc(s.name) + '</span>' +
+        '<span class="melby-score ' + sc + '">' + pfx + s.score +
+          '<span class="unit">Melbys</span></span>' +
+        '</li>';
+    }).join('');
+  }
+
+  // ── AWARD PANEL ───────────────────────────────────────
+  function renderAwardPanel() {
+    var sel     = get('award-staff');
+    var current = sel.value;
+    sel.innerHTML = '<option value="">&#8212; Select a member of staff &#8212;</option>' +
+      staff.map(function (s) {
+        return '<option value="' + s.id + '"' + (String(s.id) === current ? ' selected' : '') + '>' + esc(s.name) + '</option>';
+      }).join('');
+    renderPresets();
+  }
+
+  window.setPresetType = function (type) {
+    currentPresetType = type;
+    selectedPreset    = null;
+    get('toggle-award-btn').classList.toggle('active',  type === 'award');
+    get('toggle-deduct-btn').classList.toggle('active', type === 'deduct');
+    renderPresets();
+  };
+
+  function renderPresets() {
+    var container = get('presets-container');
+    container.innerHTML = PRESETS[currentPresetType].map(function (r, i) {
+      var sel = selectedPreset === i ? 'selected-' + currentPresetType : '';
+      return '<button class="preset-btn ' + sel + '" onclick="selectPreset(' + i + ')">' +
+        '<span class="preset-label">' + esc(r.label) + '</span>' +
+        esc(r.text) + '</button>';
+    }).join('');
+  }
+
+  window.selectPreset = function (i) {
+    selectedPreset = (selectedPreset === i) ? null : i;
+    if (selectedPreset !== null) get('custom-reason').value = '';
+    renderPresets();
+  };
+
+  window.processAction = function (type) {
+    if (isSaving) { showToast('Please wait, saving in progress.', 'info'); return; }
+
+    var staffId = get('award-staff').value;
+    if (!staffId) { showToast('Please select a staff member.', 'deduct'); return; }
+
+    var amountEl = get(type === 'award' ? 'award-amount' : 'deduct-amount');
+    var amount   = parseInt(amountEl.value, 10);
+    if (!amount || amount < 1) { showToast('Please enter a valid amount.', 'deduct'); return; }
+
+    var reason = get('custom-reason').value.trim();
+    if (!reason && selectedPreset !== null) {
+      reason = PRESETS[currentPresetType][selectedPreset].text;
+    }
+    if (!reason) { showToast('Please select or enter a reason.', 'deduct'); return; }
+
+    var member = null;
+    for (var i = 0; i < staff.length; i++) {
+      if (String(staff[i].id) === String(staffId)) { member = staff[i]; break; }
+    }
+    if (!member) { showToast('Staff member not found.', 'deduct'); return; }
+
+    var delta    = type === 'award' ? amount : -amount;
+    member.score += delta;
+
+    txHistory.unshift({
+      staffId:   member.id,
+      staffName: member.name,
+      reason:    reason,
+      delta:     delta,
+      type:      type,
+      timestamp: new Date().toISOString()
+    });
+
+    setActionBtns(true);
+    saveData().then(function () {
+      setActionBtns(false);
+      selectedPreset = null;
+      get('custom-reason').value = '';
+      renderPresets();
+      renderAwardPanel();
+      var msg = type === 'award'
+        ? '+' + amount + ' Melbys awarded to ' + member.name
+        : '-' + amount + ' Melbys deducted from ' + member.name;
+      showToast(msg, type);
+    });
+  };
+
+  // ── STAFF PANEL ───────────────────────────────────────
+  function renderStaffPanel() {
+    var grid  = get('staff-grid');
+    var empty = get('staff-empty');
+    if (!staff.length) { grid.innerHTML = ''; empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+    grid.innerHTML = staff.map(function (s) {
+      var sc  = s.score > 0 ? 'score-positive' : s.score < 0 ? 'score-negative' : '';
+      var pfx = s.score > 0 ? '+' : '';
+      return '<div class="staff-card" onclick="openStaffDetail(' + s.id + ')">' +
+        '<div class="staff-avatar">' + esc(s.name.charAt(0).toUpperCase()) + '</div>' +
+        '<div class="staff-card-name">' + esc(s.name) + '</div>' +
+        '<div class="staff-card-score ' + sc + '">' + pfx + s.score + '</div>' +
+        '<div class="staff-card-label">Melbys</div>' +
+        '</div>';
+    }).join('');
+  }
+
+  // ── HISTORY ───────────────────────────────────────────
+  function renderHistory() {
+    var el    = get('history-list');
+    var empty = get('history-empty');
+    if (!txHistory.length) { el.innerHTML = ''; empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+    el.innerHTML = txHistory.slice(0, 60).map(function (h) {
+      var icon = h.type === 'award' ? '&#127807;' : '&#128315;';
+      var sc   = h.delta > 0 ? 'score-positive' : 'score-negative';
+      var pfx  = h.delta > 0 ? '+' : '';
+      return '<div class="history-item">' +
+        '<span class="history-icon">' + icon + '</span>' +
+        '<div style="flex:1;">' +
+          '<div class="history-name">' + esc(h.staffName) + '</div>' +
+          '<div class="history-reason">' + esc(h.reason) + '</div>' +
+          '<div class="history-time">'   + formatTime(h.timestamp) + '</div>' +
+        '</div>' +
+        '<div class="history-amount ' + sc + '">' + pfx + h.delta + '</div>' +
+        '</div>';
+    }).join('');
+  }
+
+  // ── STAFF DETAIL ──────────────────────────────────────
+  window.openStaffDetail = function (id) {
+    var member = null;
+    for (var i = 0; i < staff.length; i++) {
+      if (String(staff[i].id) === String(id)) { member = staff[i]; break; }
+    }
+    if (!member) return;
+
+    var sc  = member.score > 0 ? 'score-positive' : member.score < 0 ? 'score-negative' : '';
+    var pfx = member.score > 0 ? '+' : '';
+    get('detail-name').textContent = member.name;
+    var scoreEl = get('detail-score');
+    scoreEl.className   = sc;
+    scoreEl.textContent = pfx + member.score;
+
+    var mh = txHistory.filter(function (h) { return String(h.staffId) === String(id); }).slice(0, 20);
+    var listEl = get('staff-history-list');
+    if (!mh.length) {
+      listEl.innerHTML = '<div class="empty-state">No activity recorded yet.</div>';
+    } else {
+      listEl.innerHTML = mh.map(function (h) {
+        var icon = h.type === 'award' ? '&#127807;' : '&#128315;';
+        var sc2  = h.delta > 0 ? 'score-positive' : 'score-negative';
+        var pfx2 = h.delta > 0 ? '+' : '';
+        return '<div class="history-item">' +
+          '<span class="history-icon">' + icon + '</span>' +
+          '<div style="flex:1;">' +
+            '<div class="history-reason">' + esc(h.reason) + '</div>' +
+            '<div class="history-time">'   + formatTime(h.timestamp) + '</div>' +
+          '</div>' +
+          '<div class="history-amount ' + sc2 + '">' + pfx2 + h.delta + '</div>' +
+          '</div>';
+      }).join('');
+    }
+    get('staff-detail-modal').style.display = 'flex';
+  };
+
+  window.closeStaffDetail = function () {
+    get('staff-detail-modal').style.display = 'none';
+  };
+
+  // ── ADD STAFF ─────────────────────────────────────────
+  window.openAddStaff = function () {
+    get('add-staff-modal').style.display = 'flex';
+    setTimeout(function () { get('new-staff-name').focus(); }, 100);
+  };
+
+  window.closeAddStaff = function () {
+    get('add-staff-modal').style.display = 'none';
+    get('new-staff-name').value = '';
+  };
+
+  get('new-staff-name').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') addStaff();
+  });
+
+  get('add-staff-modal').addEventListener('click', function (e) {
+    if (e.target === this) window.closeAddStaff();
+  });
+  get('staff-detail-modal').addEventListener('click', function (e) {
+    if (e.target === this) window.closeStaffDetail();
+  });
+
+  window.addStaff = function () {
+    if (isSaving) { showToast('Please wait, saving in progress.', 'info'); return; }
+    var name = get('new-staff-name').value.trim();
+    if (!name) { showToast('Please enter a name.', 'deduct'); return; }
+    var exists = staff.some(function (s) { return s.name.toLowerCase() === name.toLowerCase(); });
+    if (exists) { showToast('This member is already enrolled.', 'deduct'); return; }
+
+    staff.push({ id: Date.now(), name: name, score: 0 });
+    saveData().then(function () {
+      window.closeAddStaff();
+      renderDashboard();
+      renderStaffPanel();
+      if (isUnlocked) renderAwardPanel();
+      showToast(name + ' has been enrolled.', 'award');
+    });
+  };
+
+  // ── INIT ──────────────────────────────────────────────
+  loadData().then(function () {
+    renderDashboard();
+    // Hide loading overlay
+    var overlay = get('loading-overlay');
+    overlay.classList.add('hidden');
+    setTimeout(function () { overlay.style.display = 'none'; }, 500);
+  }).catch(function () {
+    var overlay = get('loading-overlay');
+    overlay.classList.add('hidden');
+    setTimeout(function () { overlay.style.display = 'none'; }, 500);
+    renderDashboard();
+  });
+
+})();
+</script>
+</body>
+</html>
