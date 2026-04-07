@@ -1,0 +1,723 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); color: var(--color-text-primary); }
+  .ww1-app { max-width: 860px; margin: 0 auto; padding: 1rem; }
+  .hero { background: #1a2a4a; border-radius: 12px; padding: 2rem; margin-bottom: 1.5rem; text-align: center; position: relative; overflow: hidden; }
+  .hero-bg { position: absolute; inset: 0; opacity: 0.12; background: repeating-linear-gradient(45deg, #c8a84b 0px, #c8a84b 2px, transparent 2px, transparent 20px); }
+  .hero h1 { color: #f5d87a; font-size: 26px; font-weight: 500; position: relative; margin-bottom: 0.5rem; }
+  .hero p { color: #b0c4de; font-size: 15px; position: relative; }
+  .mn-star { display: inline-block; color: #f5d87a; font-size: 22px; margin: 0 8px; }
+  .nav-tabs { display: flex; gap: 6px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .tab-btn { padding: 8px 14px; border: 0.5px solid var(--color-border-secondary); border-radius: 20px; background: var(--color-background-secondary); color: var(--color-text-secondary); font-size: 13px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+  .tab-btn.active { background: #1a2a4a; color: #f5d87a; border-color: #1a2a4a; }
+  .tab-btn:hover:not(.active) { background: var(--color-background-tertiary); color: var(--color-text-primary); }
+  .section { display: none; }
+  .section.active { display: block; }
+  .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--color-border-tertiary); }
+  .section-icon { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+  .section-icon.red { background: #f7c1c1; }
+  .section-icon.blue { background: #b5d4f4; }
+  .section-icon.green { background: #c0dd97; }
+  .section-icon.amber { background: #fac775; }
+  .section-icon.purple { background: #cecbf6; }
+  .section-title { font-size: 20px; font-weight: 500; }
+  .section-sub { font-size: 13px; color: var(--color-text-secondary); margin-top: 2px; }
+  .info-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
+  .info-card h3 { font-size: 15px; font-weight: 500; margin-bottom: 0.5rem; }
+  .info-card p { font-size: 14px; color: var(--color-text-secondary); line-height: 1.6; }
+  .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+  .cause-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: 12px; padding: 1rem; cursor: pointer; transition: all 0.2s; }
+  .cause-card:hover { border-color: var(--color-border-primary); transform: translateY(-2px); }
+  .cause-card.expanded { border-color: #185FA5; }
+  .cause-card .cause-icon { font-size: 28px; margin-bottom: 8px; display: block; }
+  .cause-card h3 { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+  .cause-card .tag { font-size: 11px; background: #E6F1FB; color: #0C447C; padding: 2px 8px; border-radius: 10px; display: inline-block; margin-bottom: 8px; }
+  .cause-card .details { font-size: 13px; color: var(--color-text-secondary); line-height: 1.5; display: none; margin-top: 8px; border-top: 0.5px solid var(--color-border-tertiary); padding-top: 8px; }
+  .cause-card.expanded .details { display: block; }
+  .scene-box { background: #0d1f3c; border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; position: relative; overflow: hidden; }
+  .scene-box .scene-art { font-size: 80px; text-align: center; display: block; margin-bottom: 12px; line-height: 1; }
+  .scene-box p { color: #b0c4de; font-size: 14px; line-height: 1.6; }
+  .scene-box h3 { color: #f5d87a; font-size: 16px; font-weight: 500; margin-bottom: 8px; }
+  .timeline { position: relative; padding-left: 28px; }
+  .timeline::before { content: ''; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background: var(--color-border-secondary); }
+  .tl-item { position: relative; margin-bottom: 1rem; }
+  .tl-dot { position: absolute; left: -24px; top: 3px; width: 12px; height: 12px; border-radius: 50%; background: #185FA5; border: 2px solid var(--color-background-primary); }
+  .tl-item h4 { font-size: 13px; font-weight: 500; }
+  .tl-item p { font-size: 13px; color: var(--color-text-secondary); line-height: 1.5; margin-top: 2px; }
+  .tl-date { font-size: 11px; color: var(--color-text-tertiary); margin-bottom: 2px; }
+  .question-card { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: 12px; padding: 1.25rem; margin-top: 1.5rem; }
+  .question-card h3 { font-size: 15px; font-weight: 500; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
+  .q-badge { background: #EAF3DE; color: #3B6D11; font-size: 11px; padding: 2px 8px; border-radius: 10px; }
+  .q-item { margin-bottom: 1rem; }
+  .q-label { font-size: 13px; font-weight: 500; margin-bottom: 6px; color: var(--color-text-primary); }
+  .q-item textarea { width: 100%; border: 0.5px solid var(--color-border-secondary); border-radius: 8px; padding: 8px 10px; font-size: 13px; font-family: var(--font-sans); resize: vertical; min-height: 64px; background: var(--color-background-primary); color: var(--color-text-primary); }
+  .q-item textarea:focus { outline: none; border-color: #185FA5; box-shadow: 0 0 0 2px #E6F1FB; }
+  .q-item input[type=text] { width: 100%; border: 0.5px solid var(--color-border-secondary); border-radius: 8px; padding: 8px 10px; font-size: 13px; font-family: var(--font-sans); background: var(--color-background-primary); color: var(--color-text-primary); }
+  .q-item input[type=text]:focus { outline: none; border-color: #185FA5; box-shadow: 0 0 0 2px #E6F1FB; }
+  .mc-option { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; cursor: pointer; padding: 6px 10px; border-radius: 8px; border: 0.5px solid transparent; transition: all 0.15s; }
+  .mc-option:hover { background: var(--color-background-primary); border-color: var(--color-border-tertiary); }
+  .mc-option input { accent-color: #185FA5; }
+  .mc-option label { font-size: 13px; cursor: pointer; }
+  .soldier-profile { display: flex; gap: 1rem; align-items: flex-start; }
+  .soldier-avatar { width: 70px; height: 70px; border-radius: 50%; background: #1a2a4a; display: flex; align-items: center; justify-content: center; font-size: 32px; flex-shrink: 0; }
+  .soldier-info h3 { font-size: 15px; font-weight: 500; margin-bottom: 4px; }
+  .soldier-info p { font-size: 13px; color: var(--color-text-secondary); line-height: 1.5; }
+  .soldier-badge { font-size: 11px; background: #FAEEDA; color: #633806; padding: 2px 8px; border-radius: 10px; display: inline-block; margin-top: 4px; }
+  .trench-vis { background: #2d1b00; border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; position: relative; overflow: hidden; }
+  .trench-layer { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .trench-layer:last-child { border-bottom: none; }
+  .trench-emoji { font-size: 24px; width: 36px; text-align: center; }
+  .trench-text { color: #d4a96a; font-size: 13px; line-height: 1.4; }
+  .trench-label { color: #f5d87a; font-size: 12px; font-weight: 500; margin-bottom: 2px; }
+  .weapon-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 1rem; }
+  .weapon-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: 10px; padding: 12px; text-align: center; cursor: pointer; transition: all 0.2s; }
+  .weapon-card:hover, .weapon-card.selected { border-color: #185FA5; background: #E6F1FB; }
+  .weapon-card .w-icon { font-size: 32px; display: block; margin-bottom: 6px; }
+  .weapon-card h4 { font-size: 13px; font-weight: 500; margin-bottom: 4px; color: var(--color-text-primary); }
+  .weapon-card p { font-size: 12px; color: var(--color-text-secondary); }
+  .weapon-info { background: var(--color-background-secondary); border-radius: 10px; padding: 1rem; margin-bottom: 1rem; font-size: 13px; color: var(--color-text-secondary); line-height: 1.5; min-height: 60px; }
+  .progress-bar-wrap { background: var(--color-background-secondary); border-radius: 8px; height: 8px; margin: 6px 0; overflow: hidden; }
+  .progress-bar { height: 100%; border-radius: 8px; transition: width 0.5s; }
+  .stat-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .stat-label { font-size: 12px; color: var(--color-text-secondary); min-width: 80px; }
+  .stat-val { font-size: 12px; font-weight: 500; min-width: 50px; text-align: right; }
+  .download-btn { width: 100%; padding: 14px; background: #1a2a4a; color: #f5d87a; border: none; border-radius: 10px; font-size: 15px; font-weight: 500; cursor: pointer; margin-top: 1.5rem; transition: opacity 0.2s; }
+  .download-btn:hover { opacity: 0.85; }
+  .name-input-wrap { background: var(--color-background-secondary); border-radius: 10px; padding: 1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .name-input-wrap label { font-size: 14px; font-weight: 500; }
+  .name-input-wrap input { flex: 1; min-width: 160px; border: 0.5px solid var(--color-border-secondary); border-radius: 8px; padding: 8px 10px; font-size: 14px; background: var(--color-background-primary); color: var(--color-text-primary); }
+  .name-input-wrap input:focus { outline: none; border-color: #185FA5; }
+  .mn-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 1rem; }
+  .mn-fact { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: 10px; padding: 1rem; text-align: center; }
+  .mn-fact .big { font-size: 26px; font-weight: 500; color: #185FA5; }
+  .mn-fact .lbl { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+  .poster-art { background: #8B1A1A; border-radius: 12px; padding: 1.5rem; text-align: center; margin-bottom: 1rem; }
+  .poster-art .poster-title { color: #f5d87a; font-size: 22px; font-weight: 500; letter-spacing: 1px; margin-bottom: 8px; }
+  .poster-art .poster-sub { color: #ffcccc; font-size: 14px; }
+  .poster-art .poster-icon { font-size: 60px; display: block; margin: 12px 0; }
+  .map-svg-wrap { border-radius: 12px; overflow: hidden; border: 0.5px solid var(--color-border-tertiary); margin-bottom: 1rem; }
+  .flip-card { cursor: pointer; perspective: 600px; height: 110px; margin-bottom: 10px; }
+  .flip-inner { position: relative; width: 100%; height: 100%; transition: transform 0.5s; transform-style: preserve-3d; }
+  .flip-card.flipped .flip-inner { transform: rotateY(180deg); }
+  .flip-front, .flip-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 10px; display: flex; align-items: center; justify-content: center; padding: 12px; text-align: center; }
+  .flip-front { background: #1a2a4a; color: #f5d87a; font-size: 14px; font-weight: 500; border: 0.5px solid #2a3a6a; }
+  .flip-back { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); color: var(--color-text-primary); font-size: 13px; transform: rotateY(180deg); }
+  .section-complete { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; background: #EAF3DE; color: #3B6D11; padding: 2px 8px; border-radius: 10px; margin-left: 6px; }
+  .tab-indicator { width: 6px; height: 6px; border-radius: 50%; background: #3B6D11; }
+</style>
+
+<div class="ww1-app">
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-icon" style="font-size:48px;margin-bottom:10px;position:relative;">🎖️</div>
+    <h1>Minnesota in World War I</h1>
+    <p>Explore how Minnesotans helped shape the Great War <span class="mn-star">★</span> 1914–1918</p>
+  </div>
+
+  <div class="name-input-wrap">
+    <label>Your name:</label>
+    <input type="text" id="student-name" placeholder="Type your name here..." />
+    <span style="font-size:13px;color:var(--color-text-secondary);">Your answers will be saved as you type</span>
+  </div>
+
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="showTab('causes')">💥 Causes of War</button>
+    <button class="tab-btn" onclick="showTab('usentry')">🇺🇸 US Joins the War</button>
+    <button class="tab-btn" onclick="showTab('fighting')">⚔️ How It Was Fought</button>
+    <button class="tab-btn" onclick="showTab('minnesota')">🌟 Minnesota's Role</button>
+    <button class="tab-btn" onclick="showTab('ending')">🕊️ How It Ended</button>
+    <button class="tab-btn" onclick="showTab('mywork')">📋 My Answers</button>
+  </div>
+
+  <!-- SECTION 1: CAUSES -->
+  <div class="section active" id="sec-causes">
+    <div class="section-header">
+      <div class="section-icon red">💥</div>
+      <div>
+        <div class="section-title">What caused World War I?</div>
+        <div class="section-sub">Click each cause to learn more — there were 4 big reasons!</div>
+      </div>
+    </div>
+
+    <p style="font-size:14px;color:var(--color-text-secondary);margin-bottom:1rem;line-height:1.6;">World War I didn't start from just one thing. Historians remember the causes with the word <strong style="color:var(--color-text-primary);">MAIN</strong> — Militarism, Alliances, Imperialism, and Nationalism. Click each card to explore!</p>
+
+    <div class="grid-2">
+      <div class="cause-card" onclick="toggleCause(this)">
+        <span class="cause-icon">⚔️</span>
+        <div class="tag">M — Militarism</div>
+        <h3>Armies &amp; Arms Race</h3>
+        <div class="details">European countries were building up huge armies and navies, especially Germany and Britain. Countries thought that having the biggest military would keep them safe — but it actually made war more likely because everyone was ready to fight!</div>
+      </div>
+      <div class="cause-card" onclick="toggleCause(this)">
+        <span class="cause-icon">🤝</span>
+        <div class="tag">A — Alliances</div>
+        <h3>Secret Agreements</h3>
+        <div class="details">Countries made secret promises to protect each other. Europe split into two groups: the Triple Alliance (Germany, Austria-Hungary, Italy) and the Triple Entente (France, Russia, Britain). When one country went to war, all its allies had to join — like dominoes falling!</div>
+      </div>
+      <div class="cause-card" onclick="toggleCause(this)">
+        <span class="cause-icon">🌍</span>
+        <div class="tag">I — Imperialism</div>
+        <h3>Competition for Colonies</h3>
+        <div class="details">European countries competed to control land in Africa and Asia. This competition created jealousy and conflict. Germany felt it deserved more colonies than it had, which created tension with Britain and France.</div>
+      </div>
+      <div class="cause-card" onclick="toggleCause(this)">
+        <span class="cause-icon">🏳️</span>
+        <div class="tag">N — Nationalism</div>
+        <h3>Pride &amp; Independence</h3>
+        <div class="details">People in different regions wanted their own countries and felt very proud of their heritage. In Austria-Hungary, groups like Serbians wanted independence. This nationalism created conflict, especially in the Balkans region of Europe.</div>
+      </div>
+    </div>
+
+    <div class="info-card" style="border-left: 3px solid #E24B4A;">
+      <h3>🔫 The Spark: Assassination of Archduke Franz Ferdinand</h3>
+      <p>On June 28, 1914, Archduke Franz Ferdinand of Austria-Hungary was shot and killed in Sarajevo by a Serbian nationalist named Gavrilo Princip. This single event triggered the alliance system — within weeks, nearly all of Europe was at war! World War I officially began in August 1914.</p>
+    </div>
+
+    <div class="info-card">
+      <h3>🗺️ The Two Sides</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:0.5rem;">
+        <div style="text-align:center;padding:10px;background:#E6F1FB;border-radius:8px;">
+          <div style="font-size:11px;color:#0C447C;font-weight:500;margin-bottom:4px;">ALLIED POWERS</div>
+          <div style="font-size:13px;color:#185FA5;">France 🇫🇷 · Britain 🇬🇧<br>Russia 🇷🇺 · Italy 🇮🇹</div>
+        </div>
+        <div style="text-align:center;padding:10px;background:#FAECE7;border-radius:8px;">
+          <div style="font-size:11px;color:#712B13;font-weight:500;margin-bottom:4px;">CENTRAL POWERS</div>
+          <div style="font-size:13px;color:#993C1D;">Germany 🇩🇪 · Austria-Hungary<br>Ottoman Empire</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-card">
+      <h3>✏️ Think About It <span class="q-badge">Section 1 Questions</span></h3>
+      <div class="q-item">
+        <div class="q-label">1. What does MAIN stand for? Write out all four causes.</div>
+        <textarea id="q1_1" placeholder="M = __, A = __, I = __, N = __..." oninput="saveAnswer('q1_1',this.value)"></textarea>
+      </div>
+      <div class="q-item">
+        <div class="q-label">2. Which cause do YOU think was most important? Explain why in 2–3 sentences.</div>
+        <textarea id="q1_2" placeholder="I think the most important cause was..." oninput="saveAnswer('q1_2',this.value)"></textarea>
+      </div>
+      <div class="q-item">
+        <div class="q-label">3. The assassination of Franz Ferdinand was the "spark." What does that mean?</div>
+        <div class="mc-option"><input type="radio" name="q1_3" value="a" onchange="saveAnswer('q1_3','A - It started the fire that was already ready to burn')"><label>A) It started a fire that was already ready to burn</label></div>
+        <div class="mc-option"><input type="radio" name="q1_3" value="b" onchange="saveAnswer('q1_3','B - It was the only reason the war started')"><label>B) It was the only reason the war started</label></div>
+        <div class="mc-option"><input type="radio" name="q1_3" value="c" onchange="saveAnswer('q1_3','C - It happened by accident')"><label>C) It happened by accident and no one expected war</label></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: US ENTRY -->
+  <div class="section" id="sec-usentry">
+    <div class="section-header">
+      <div class="section-icon blue">🇺🇸</div>
+      <div>
+        <div class="section-title">Why did the United States join the war?</div>
+        <div class="section-sub">The US waited 3 years — here's why it finally jumped in</div>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <h3>🌊 At First: Staying Out</h3>
+      <p>When war broke out in 1914, President Woodrow Wilson declared that the US would stay neutral — meaning the US wouldn't pick a side. Many Americans didn't want to get involved in Europe's problems. This was called <strong style="color:var(--color-text-primary);">isolationism</strong>.</p>
+    </div>
+
+    <div style="margin-bottom:1rem;">
+      <p style="font-size:14px;color:var(--color-text-secondary);margin-bottom:10px;font-weight:500;">Flip each card to see the reasons the US changed its mind:</p>
+      <div class="flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front">🚢 The Lusitania Sinking (1915) — tap to reveal</div>
+          <div class="flip-back">A German submarine sank the British ship Lusitania. 1,198 people died — including 128 Americans! This outraged the US public and turned many Americans against Germany.</div>
+        </div>
+      </div>
+      <div class="flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front">📜 The Zimmermann Telegram (1917) — tap to reveal</div>
+          <div class="flip-back">Germany sent a secret message to Mexico, asking Mexico to attack the US in exchange for help getting Texas, New Mexico, and Arizona back. The British intercepted it and showed it to the US — Americans were furious!</div>
+        </div>
+      </div>
+      <div class="flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front">⚓ Unrestricted Submarine Warfare — tap to reveal</div>
+          <div class="flip-back">Germany declared it would sink ANY ship near Britain — including American ships. This was a direct threat to US trade and lives. Germany was basically daring the US to fight.</div>
+        </div>
+      </div>
+      <div class="flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front">🗽 "Make the World Safe for Democracy" — tap to reveal</div>
+          <div class="flip-back">President Wilson asked Congress to declare war on April 6, 1917. He said the US was fighting to protect democracy and freedom worldwide. Congress agreed, and the US officially entered the war!</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scene-box">
+      <span class="scene-art">🌊🚢💥</span>
+      <h3>The Lusitania — A Turning Point</h3>
+      <p>On May 7, 1915, a German submarine (called a U-boat) fired a torpedo at the British ocean liner Lusitania off the coast of Ireland. The massive ship sank in just 18 minutes. Many Americans who had wanted to stay neutral began to change their minds after this tragedy.</p>
+    </div>
+
+    <div class="info-card">
+      <h3>📅 Key Date: April 6, 1917</h3>
+      <p>This is the day the United States officially declared war on Germany and joined the Allied Powers. American troops — called the <strong style="color:var(--color-text-primary);">American Expeditionary Forces (AEF)</strong> — were led by General John "Black Jack" Pershing. Thousands of Minnesotans would soon be heading to France!</p>
+    </div>
+
+    <div class="question-card">
+      <h3>✏️ Think About It <span class="q-badge">Section 2 Questions</span></h3>
+      <div class="q-item">
+        <div class="q-label">1. What does "neutral" mean? Why did the US want to stay neutral at first?</div>
+        <textarea id="q2_1" placeholder="Neutral means..." oninput="saveAnswer('q2_1',this.value)"></textarea>
+      </div>
+      <div class="q-item">
+        <div class="q-label">2. Which reason do you think pushed the US the most into the war? Why?</div>
+        <textarea id="q2_2" placeholder="I think the biggest reason was..." oninput="saveAnswer('q2_2',this.value)"></textarea>
+      </div>
+      <div class="q-item">
+        <div class="q-label">3. The Zimmermann Telegram offered Mexico which US states?</div>
+        <div class="mc-option"><input type="radio" name="q2_3" value="a" onchange="saveAnswer('q2_3','A - Texas, New Mexico, Arizona')"><label>A) Texas, New Mexico, and Arizona</label></div>
+        <div class="mc-option"><input type="radio" name="q2_3" value="b" onchange="saveAnswer('q2_3','B - California, Nevada, Utah')"><label>B) California, Nevada, and Utah</label></div>
+        <div class="mc-option"><input type="radio" name="q2_3" value="c" onchange="saveAnswer('q2_3','C - Florida, Georgia, Alabama')"><label>C) Florida, Georgia, and Alabama</label></div>
+      </div>
+      <div class="q-item">
+        <div class="q-label">4. Imagine you are an American in 1916. Write a short diary entry about whether the US should join the war.</div>
+        <textarea id="q2_4" placeholder="Dear Diary, Today I read in the newspaper about..." oninput="saveAnswer('q2_4',this.value)" style="min-height:90px;"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: FIGHTING -->
+  <div class="section" id="sec-fighting">
+    <div class="section-header">
+      <div class="section-icon green">⚔️</div>
+      <div>
+        <div class="section-title">How was the war fought?</div>
+        <div class="section-sub">New weapons, muddy trenches, and battles like never before</div>
+      </div>
+    </div>
+
+    <div class="trench-vis">
+      <div style="color:#f5d87a;font-size:16px;font-weight:500;margin-bottom:12px;text-align:center;">🪖 Life in the Trenches</div>
+      <div class="trench-layer">
+        <span class="trench-emoji">☀️</span>
+        <div class="trench-text"><span class="trench-label">No Man's Land (Top)</span>The dangerous ground between enemy trenches — lined with barbed wire and craters from explosions. Soldiers who ran across it rarely survived.</div>
+      </div>
+      <div class="trench-layer">
+        <span class="trench-emoji">🪖</span>
+        <div class="trench-text"><span class="trench-label">Fire Trench</span>Soldiers stood here to fight. Narrow ditches dug into the earth, about 7 feet deep. Mud, rats, and disease were constant problems.</div>
+      </div>
+      <div class="trench-layer">
+        <span class="trench-emoji">🏥</span>
+        <div class="trench-text"><span class="trench-label">Support Trench</span>Backup soldiers and supplies were kept here, ready to help those in the fire trench.</div>
+      </div>
+      <div class="trench-layer">
+        <span class="trench-emoji">🎖️</span>
+        <div class="trench-text"><span class="trench-label">Reserve Trench (Deepest)</span>Commanding officers directed operations from here. Food and ammunition moved up from this level.</div>
+      </div>
+    </div>
+
+    <p style="font-size:14px;color:var(--color-text-secondary);margin-bottom:10px;font-weight:500;">New weapons changed warfare forever — click each weapon to learn more:</p>
+    <div class="weapon-grid" id="weapon-grid">
+      <div class="weapon-card" onclick="showWeapon(this,'Machine guns could fire hundreds of bullets per minute, making it nearly impossible to charge across No Man\'s Land. This is why battles lasted so long and caused so many deaths.')">
+        <span class="w-icon">🔫</span>
+        <h4>Machine Gun</h4>
+        <p>Rapid fire weapon</p>
+      </div>
+      <div class="weapon-card" onclick="showWeapon(this,'Poison gas (chlorine and mustard gas) caused terrible suffering — it burned eyes, skin, and lungs. Soldiers were given gas masks but they didn\'t always work in time. Gas attacks were terrifying because you couldn\'t see them coming.')">
+        <span class="w-icon">☁️</span>
+        <h4>Poison Gas</h4>
+        <p>Chemical warfare</p>
+      </div>
+      <div class="weapon-card" onclick="showWeapon(this,'Tanks were brand new in WWI! Britain invented them in 1916. They could roll over barbed wire and cross trenches, giving soldiers some protection. Early tanks were slow and broke down often, but they changed warfare forever.')">
+        <span class="w-icon">🛡️</span>
+        <h4>Tank</h4>
+        <p>Armored vehicle</p>
+      </div>
+      <div class="weapon-card" onclick="showWeapon(this,'Airplanes were first used for spying on enemy positions. Soon pilots began fighting each other in the air — called dogfights. Famous pilots were called aces. Germany\'s Red Baron (Manfred von Richthofen) was the most famous ace of the war.')">
+        <span class="w-icon">✈️</span>
+        <h4>Airplanes</h4>
+        <p>New air warfare</p>
+      </div>
+      <div class="weapon-card" onclick="showWeapon(this,'German U-boats (submarines) hid under the ocean and torpedoed ships without warning. They nearly cut off Britain\'s food supply! U-boats were one of the main reasons the US joined the war.')">
+        <span class="w-icon">🚢</span>
+        <h4>U-Boats</h4>
+        <p>Submarines</p>
+      </div>
+      <div class="weapon-card" onclick="showWeapon(this,'Huge artillery cannons fired massive shells miles away. The explosions created giant craters in the ground. Before a big attack, armies would fire artillery for days to try to destroy enemy trenches — the noise was so loud it could be heard in England from France!')">
+        <span class="w-icon">💣</span>
+        <h4>Artillery</h4>
+        <p>Giant cannons</p>
+      </div>
+    </div>
+    <div class="weapon-info" id="weapon-info" style="color:var(--color-text-secondary);">👆 Tap a weapon above to learn about it</div>
+
+    <div class="info-card" style="margin-top:1rem;">
+      <h3>📊 The Scale of the War</h3>
+      <div style="margin-top:0.75rem;">
+        <div class="stat-row">
+          <span class="stat-label">Countries involved</span>
+          <div class="progress-bar-wrap" style="flex:1;"><div class="progress-bar" style="width:70%;background:#185FA5;"></div></div>
+          <span class="stat-val">30+</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Soldiers killed</span>
+          <div class="progress-bar-wrap" style="flex:1;"><div class="progress-bar" style="width:90%;background:#E24B4A;"></div></div>
+          <span class="stat-val">~10 million</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Civilians killed</span>
+          <div class="progress-bar-wrap" style="flex:1;"><div class="progress-bar" style="width:75%;background:#BA7517;"></div></div>
+          <span class="stat-val">~7 million</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">US soldiers who served</span>
+          <div class="progress-bar-wrap" style="flex:1;"><div class="progress-bar" style="width:40%;background:#3B6D11;"></div></div>
+          <span class="stat-val">4.7 million</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-card">
+      <h3>✏️ Think About It <span class="q-badge">Section 3 Questions</span></h3>
+      <div class="q-item">
+        <div class="q-label">1. What was "No Man's Land" and why was it so dangerous?</div>
+        <textarea id="q3_1" placeholder="No Man's Land was..." oninput="saveAnswer('q3_1',this.value)"></textarea>
+      </div>
+      <div class="q-item">
+        <div class="q-label">2. Which new weapon do you think changed warfare the most? Explain your thinking.</div>
+        <textarea id="q3_2" placeholder="I think the most game-changing weapon was..." oninput="saveAnswer('q3_2',this.value)"></textarea>
+      </div>
+      <div class="q-item">
+        <div class="q-label">3. Imagine you are a soldier in the trenches. Describe what you see, hear, and feel.</div>
+        <textarea id="q3_3" placeholder="As I sit in the trench, I can see..." oninput="saveAnswer('q3_3',this.value)" style="min-height:90px;"></textarea>
+      </div>
+      <div class="q-item">
+        <div class="q-label">4. Why did battles last so long in World War I? (Select all that apply)</div>
+        <div class="mc-option"><input type="checkbox" id="q3_4a" onchange="saveCB('q3_4a')"><label for="q3_4a">Machine guns made crossing open ground deadly</label></div>
+        <div class="mc-option"><input type="checkbox" id="q3_4b" onchange="saveCB('q3_4b')"><label for="q3_4b">Soldiers didn't want to fight</label></div>
+        <div class="mc-option"><input type="checkbox" id="q3_4c" onchange="saveCB('q3_4c')"><label for="q3_4c">Trenches provided strong defense</label></div>
+        <div class="mc-option"><input type="checkbox" id="q3_4d" onchange="saveCB('q3_4d')"><label for="q3_4d">Both sides were equally matched</label></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4: MINNESOTA -->
+  <div class="section" id="sec-minnesota">
+    <div class="section-header">
+      <div class="section-icon amber">🌟</div>
+      <div>
+        <div class="section-title">Minnesota's Role in WWI</div>
+        <div class="section-sub">From the Iron Range to the Western Front — Minnesotans answered the call</div>
+      </div>
+    </div>
+
+    <div class="mn-facts">
+      <div class="mn-fact">
+        <div class="big">118,000+</div>
+        <div class="lbl">Minnesotans who served</div>
+      </div>
+      <div class="mn-fact">
+        <div class="big">3,485</div>
+        <div class="lbl">Minnesotans killed</div>
+      </div>
+      <div class="mn-fact">
+        <div class="big">2nd</div>
+        <div class="lbl">State in troop contributions per capita</div>
+      </div>
+      <div class="mn-fact">
+        <div class="big">1917</div>
+        <div class="lbl">MN Commission of Public Safety created</div>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <h3>🏕️ Camp Dodge &amp; Fort Snelling</h3>
+      <p>Many Minnesotans trained at Fort Snelling in St. Paul before heading overseas. Camp Dodge in Iowa also trained thousands of men from Minnesota. The 34th Infantry Division — nicknamed the <strong style="color:var(--color-text-primary);">"Sandstorm Division"</strong> — included many Minnesota soldiers.</p>
+    </div>
+
+    <div class="info-card" style="border-left:3px solid #185FA5;">
+      <h3>🔥 Iron Range &amp; Industry</h3>
+      <p>Minnesota's Iron Range (places like Hibbing, Virginia, and Eveleth) was critically important to the war. Iron ore from Minnesota was turned into steel for weapons, ships, tanks, and railroad tracks. Without Minnesota's iron mines, the war effort would have struggled greatly!</p>
+    </div>
+
+    <div class="info-card" style="border-left:3px solid #3B6D11;">
+      <h3>🌾 Food Will Win the War!</h3>
+      <p>Minnesota farms were vital. The US Food Administration, led by Herbert Hoover, asked Americans to have "Wheatless Wednesdays" and "Meatless Mondays" to save food for troops. Minnesota farmers grew huge amounts of wheat, corn, and other crops to feed soldiers in Europe.</p>
+    </div>
+
+    <div class="poster-art">
+      <span class="poster-icon">🦅</span>
+      <div class="poster-title">I WANT YOU</div>
+      <div class="poster-sub">FOR THE U.S. ARMY — Minnesota answered the call!</div>
+      <div style="margin-top:12px;font-size:13px;color:#ffcccc;">Posters like this appeared all over Minnesota towns, encouraging men to enlist and women to support the war effort at home.</div>
+    </div>
+
+    <div style="margin-bottom:1rem;">
+      <div style="font-size:15px;font-weight:500;margin-bottom:10px;">Notable Minnesotans in WWI:</div>
+      <div class="info-card" style="margin-bottom:10px;">
+        <div class="soldier-profile">
+          <div class="soldier-avatar">👨‍✈️</div>
+          <div class="soldier-info">
+            <h3>Governor Joseph Burnquist</h3>
+            <p>Burnquist led Minnesota's aggressive war support effort. He ran the Minnesota Commission of Public Safety (MCPS), which organized civilian support, tracked war production, and unfortunately also suppressed the rights of German-Americans in Minnesota.</p>
+            <span class="soldier-badge">Minnesota Governor 1915–1921</span>
+          </div>
+        </div>
+      </div>
+      <div class="info-card" style="margin-bottom:10px;">
+        <div class="soldier-profile">
+          <div class="soldier-avatar">✊</div>
+          <div class="soldier-info">
+            <h3>Non-Partisan League Farmers</h3>
+            <p>Not all Minnesotans supported the war eagerly. Many farmers — especially from Scandinavian backgrounds — questioned why they should fight in Europe's war. Some faced harassment for their views. The war created tension between patriotism and free speech in Minnesota.</p>
+            <span class="soldier-badge">Free speech debate in wartime</span>
+          </div>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="soldier-profile">
+          <div class="soldier-avatar">👩</div>
+          <div class="soldier-info">
+            <h3>Minnesota Women in the War</h3>
+            <p>Women couldn't fight but they contributed enormously. They worked in factories, rolled bandages for the Red Cross, raised funds through Liberty Bonds, and kept farms running while men were away. Some women served as nurses overseas in France.</p>
+            <span class="soldier-badge">Home Front Heroes</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <h3>😟 The Dark Side: Anti-German Prejudice</h3>
+      <p>Minnesota had a large German-American population — many families had immigrated from Germany in the 1800s. During WWI, these citizens faced unfair suspicion and discrimination. German-language classes were dropped from schools, German street names were changed, and some German-Americans were called disloyal. This is an important reminder that fear can lead to injustice.</p>
+    </div>
+
+    <div class="question-card">
+      <h3>✏️ Think About It <span class="q-badge">Section 4 Questions</span></h3>
+      <div class="q-item">
+        <div class="q-label">1. How did Minnesota's Iron Range help win the war?</div>
+        <textarea id="q4_1" placeholder="Minnesota's Iron Range was important because..." oninput="saveAnswer('q4_1',this.value)"></textarea>
+      </div>
+      <div class="q-item">
+        <div class="q-label">2. How did women on the home front contribute to the war effort?</div>
+        <textarea id="q4_2" placeholder="Women helped the war effort by..." oninput="saveAnswer('q4_2',this.value)"></textarea>
+      </div>
+      <div class="q-item">
+        <div class="q-label">3. Why do you think German-Americans in Minnesota were treated unfairly? Was this right or wrong? Explain.</div>
+        <textarea id="q4_3" placeholder="German-Americans were treated unfairly because..." oninput="saveAnswer('q4_3',this.value)" style="min-height:90px;"></textarea>
+      </div>
+      <div class="q-item">
+        <div class="q-label">4. If you lived in Minnesota in 1917, how do you think the war would have affected your daily life?</div>
+        <textarea id="q4_4" placeholder="If I lived in Minnesota in 1917, I would have noticed..." oninput="saveAnswer('q4_4',this.value)"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 5: ENDING -->
+  <div class="section" id="sec-ending">
+    <div class="section-header">
+      <div class="section-icon purple">🕊️</div>
+      <div>
+        <div class="section-title">How did the war end?</div>
+        <div class="section-sub">The 11th hour of the 11th day of the 11th month...</div>
+      </div>
+    </div>
+
+    <div class="scene-box">
+      <span class="scene-art">🕯️🕊️🤝</span>
+      <h3>November 11, 1918 — The Armistice</h3>
+      <p>At exactly 11:00 AM on November 11, 1918, guns across Europe fell silent. An armistice (agreement to stop fighting) was signed between the Allied Powers and Germany. After more than 4 years of devastating war, it was finally over. Crowds in cities around the world — including Minneapolis and St. Paul — celebrated in the streets!</p>
+    </div>
+
+    <div style="margin-bottom:1rem;">
+      <div style="font-size:15px;font-weight:500;margin-bottom:10px;">The Path to Peace — key events:</div>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-date">Spring 1918</div>
+          <h4>Germany's Last Offensive</h4>
+          <p>Germany launched a massive attack hoping to win before American troops fully arrived. It almost worked — but the Allies held on.</p>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-date">Summer 1918</div>
+          <h4>Americans Arrive in Force</h4>
+          <p>Over a million fresh American soldiers poured into France, giving the Allies new strength and hope. The tide turned against Germany.</p>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-date">September–October 1918</div>
+          <h4>The Hundred Days Offensive</h4>
+          <p>The Allies launched a huge counterattack. Germany and its allies began retreating and collapsing. Austria-Hungary fell apart; Germany's Kaiser Wilhelm II fled.</p>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-date">November 11, 1918</div>
+          <h4>The Armistice — War Ends!</h4>
+          <p>Germany signed the armistice at 5 AM, and fighting stopped at 11 AM. WWI was over. Minnesotans celebrated from Duluth to Mankato!</p>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot" style="background:#3B6D11;"></div>
+          <div class="tl-date">June 28, 1919</div>
+          <h4>Treaty of Versailles</h4>
+          <p>The official peace treaty was signed in France. Germany was blamed for the war and forced to pay huge fines (called reparations), give up land, and shrink its military. Many historians believe these harsh terms helped lead to World War II.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-card" style="border-left:3px solid #534AB7;">
+      <h3>📋 Wilson's 14 Points</h3>
+      <p>President Wilson had a plan for lasting peace — his "14 Points." Key ideas included: freedom of the seas, reducing armies, letting people choose their own governments (self-determination), and — most importantly — creating a <strong style="color:var(--color-text-primary);">League of Nations</strong> where countries could solve problems without fighting. Sadly, the US Senate refused to join the League, weakening it.</p>
+    </div>
+
+    <div class="info-card">
+      <h3>🏠 Minnesotans Come Home</h3>
+      <p>Returning soldiers were welcomed with parades in Minneapolis, St. Paul, Duluth, and smaller towns across the state. But many soldiers struggled with wounds — both physical and mental. WWI was the first war where "shell shock" (now called PTSD) was recognized. Minnesota communities worked hard to welcome veterans home and help them rebuild their lives.</p>
+    </div>
+
+    <div class="info-card" style="background:#FFF8E1;border-color:#FAC775;">
+      <h3>⚠️ Seeds of the Next War</h3>
+      <p>The harsh treatment of Germany in the Treaty of Versailles caused economic collapse and resentment in Germany. This created conditions that allowed Adolf Hitler to rise to power — setting the stage for World War II just 20 years later. WWI's "peace" didn't last.</p>
+    </div>
+
+    <div class="question-card">
+      <h3>✏️ Think About It <span class="q-badge">Section 5 Questions</span></h3>
+      <div class="q-item">
+        <div class="q-label">1. Why is November 11 still honored today as Veterans Day?</div>
+        <textarea id="q5_1" placeholder="November 11 is special because..." oninput="saveAnswer('q5_1',this.value)"></textarea>
+      </div>
+      <div class="q-item">
+        <div class="q-label">2. Do you think the Treaty of Versailles was fair to Germany? Why or why not?</div>
+        <textarea id="q5_2" placeholder="I think the Treaty of Versailles was / was not fair because..." oninput="saveAnswer('q5_2',this.value)"></textarea>
+      </div>
+      <div class="q-item">
+        <div class="q-label">3. What was the League of Nations? Why did Wilson want it?</div>
+        <textarea id="q5_3" placeholder="The League of Nations was..." oninput="saveAnswer('q5_3',this.value)"></textarea>
+      </div>
+      <div class="q-item">
+        <div class="q-label">4. If you could add one rule to Wilson's 14 Points, what would it be and why?</div>
+        <textarea id="q5_4" placeholder="I would add a rule that says..." oninput="saveAnswer('q5_4',this.value)"></textarea>
+      </div>
+      <div class="q-item">
+        <div class="q-label">5. What is the most important thing you learned from this lesson about World War I?</div>
+        <textarea id="q5_5" placeholder="The most important thing I learned was..." oninput="saveAnswer('q5_5',this.value)" style="min-height:80px;"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 6: MY WORK -->
+  <div class="section" id="sec-mywork">
+    <div class="section-header">
+      <div class="section-icon purple">📋</div>
+      <div>
+        <div class="section-title">My Answers</div>
+        <div class="section-sub">Review your work and download it to keep</div>
+      </div>
+    </div>
+    <div id="answer-preview" style="background:var(--color-background-secondary);border-radius:12px;padding:1.25rem;margin-bottom:1rem;font-size:13px;line-height:1.7;"></div>
+    <button class="download-btn" onclick="downloadAnswers()">⬇️ Download My Answers as a Text File</button>
+  </div>
+</div>
+
+<script>
+const answers = {};
+const qLabels = {
+  q1_1:"Section 1, Q1: What does MAIN stand for?",
+  q1_2:"Section 1, Q2: Which cause was most important?",
+  q1_3:"Section 1, Q3: The assassination was the 'spark' — what does this mean?",
+  q2_1:"Section 2, Q1: What does 'neutral' mean?",
+  q2_2:"Section 2, Q2: Which reason pushed the US most into war?",
+  q2_3:"Section 2, Q3: Zimmermann Telegram — which states?",
+  q2_4:"Section 2, Q4: Your 1916 diary entry",
+  q3_1:"Section 3, Q1: What was No Man's Land?",
+  q3_2:"Section 3, Q2: Which weapon changed warfare most?",
+  q3_3:"Section 3, Q3: Imagine you are a soldier in the trenches",
+  q3_4a:"Section 3, Q4 (checkbox): Machine guns made crossing open ground deadly",
+  q3_4b:"Section 3, Q4 (checkbox): Soldiers didn't want to fight",
+  q3_4c:"Section 3, Q4 (checkbox): Trenches provided strong defense",
+  q3_4d:"Section 3, Q4 (checkbox): Both sides were equally matched",
+  q4_1:"Section 4, Q1: How did Iron Range help?",
+  q4_2:"Section 4, Q2: How did women contribute?",
+  q4_3:"Section 4, Q3: Why were German-Americans treated unfairly?",
+  q4_4:"Section 4, Q4: Life in Minnesota 1917",
+  q5_1:"Section 5, Q1: Why is November 11 honored?",
+  q5_2:"Section 5, Q2: Was the Treaty of Versailles fair?",
+  q5_3:"Section 5, Q3: What was the League of Nations?",
+  q5_4:"Section 5, Q4: Your rule for Wilson's 14 Points",
+  q5_5:"Section 5, Q5: Most important thing you learned",
+};
+
+function saveAnswer(id, val) {
+  answers[id] = val;
+}
+
+function saveCB(id) {
+  const el = document.getElementById(id);
+  answers[id] = el.checked ? "Yes (checked)" : "No (unchecked)";
+}
+
+function showTab(tab) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('sec-' + tab).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (tab === 'mywork') buildPreview();
+  window.scrollTo(0,0);
+}
+
+function toggleCause(card) {
+  const wasExpanded = card.classList.contains('expanded');
+  document.querySelectorAll('.cause-card').forEach(c => c.classList.remove('expanded'));
+  if (!wasExpanded) card.classList.add('expanded');
+}
+
+function showWeapon(card, text) {
+  document.querySelectorAll('.weapon-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+  document.getElementById('weapon-info').textContent = text;
+}
+
+function buildPreview() {
+  const name = document.getElementById('student-name').value || '(no name)';
+  let html = '<div style="font-weight:500;font-size:15px;margin-bottom:12px;">Student: ' + name + '</div>';
+  html += '<div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:12px;">Minnesota in World War I — My Answers</div>';
+  let hasAny = false;
+  for (const [id, label] of Object.entries(qLabels)) {
+    const val = answers[id] || '';
+    if (val && val.trim()) {
+      hasAny = true;
+      html += '<div style="margin-bottom:10px;padding-bottom:10px;border-bottom:0.5px solid var(--color-border-tertiary);"><div style="font-weight:500;font-size:12px;color:var(--color-text-secondary);margin-bottom:3px;">' + label + '</div><div style="font-size:13px;">' + val.replace(/\n/g,'<br>') + '</div></div>';
+    }
+  }
+  if (!hasAny) html += '<div style="color:var(--color-text-secondary);font-size:13px;">You have not answered any questions yet. Go back to the sections and fill in your answers!</div>';
+  document.getElementById('answer-preview').innerHTML = html;
+}
+
+function downloadAnswers() {
+  const name = document.getElementById('student-name').value || 'Student';
+  let text = 'MINNESOTA IN WORLD WAR I — MY ANSWERS\n';
+  text += 'Student: ' + name + '\n';
+  text += 'Date: ' + new Date().toLocaleDateString() + '\n';
+  text += '='.repeat(50) + '\n\n';
+  let hasAny = false;
+  for (const [id, label] of Object.entries(qLabels)) {
+    const val = answers[id] || '';
+    if (val && val.trim()) {
+      hasAny = true;
+      text += label + '\n';
+      text += val + '\n\n';
+    }
+  }
+  if (!hasAny) {
+    text += '(No answers recorded yet. Please go back and answer the questions in each section.)\n';
+  }
+  text += '\n' + '='.repeat(50) + '\n';
+  text += 'Keep learning! — Minnesota in WWI Interactive\n';
+  const blob = new Blob([text], {type: 'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = (name.replace(/\s+/g,'_') || 'student') + '_WWI_answers.txt';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+</script>
